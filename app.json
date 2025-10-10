@@ -1,0 +1,43 @@
+{
+  "name": "Alpha Security Server",
+  "description": "Anti-theft server for Alpha Security Suite - Remote device control, location tracking, and alarm management",
+  "repository": "https://github.com/your-username/alpha-security-server",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "express", "security", "anti-theft", "device-management"],
+  "stack": "heroku-22",
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "JWT_SECRET": {
+      "description": "Secret key for JWT tokens",
+      "generator": "secret"
+    },
+    "API_SECRET_KEY": {
+      "description": "Secret key for API authentication",
+      "generator": "secret"
+    },
+    "SESSION_SECRET": {
+      "description": "Secret key for sessions",
+      "generator": "secret"
+    },
+    "ENCRYPTION_KEY": {
+      "description": "32-character encryption key",
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "heroku-postgresql:mini"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

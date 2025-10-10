@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Security Suite - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="login-section" class="section">
+        <div class="container">
+            <div class="login-card">
+                <h1>🛡️ Alpha Security Suite</h1>
+                <p>Remote Device Security & Tracking</p>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="showTab('login')">Login</button>
+                    <button class="tab-btn" onclick="showTab('register')">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <input type="text" id="login-username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="login-password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form" style="display: none;">
+                    <div class="form-group">
+                        <input type="text" id="register-username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="register-email" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="register-password" placeholder="Password (min 6 chars)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+
+                <div id="auth-error" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="section" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <h1>🛡️ Alpha Security Dashboard</h1>
+                    <div class="user-info">
+                        <span id="username-display"></span>
+                        <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Device Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Total Devices</h3>
+                        <span id="total-devices" class="metric">0</span>
+                    </div>
+                    <div class="card">
+                        <h3>Online</h3>
+                        <span id="online-devices" class="metric online">0</span>
+                    </div>
+                    <div class="card">
+                        <h3>Locked</h3>
+                        <span id="locked-devices" class="metric warning">0</span>
+                    </div>
+                    <div class="card">
+                        <h3>Alerts</h3>
+                        <span id="alert-devices" class="metric danger">0</span>
+                    </div>
+                </div>
+
+                <!-- Map Section -->
+                <div class="card map-card">
+                    <div class="card-header">
+                        <h3>📍 Device Locations</h3>
+                        <button id="refresh-map" class="btn btn-secondary">Refresh</button>
+                    </div>
+                    <div id="map" style="height: 400px;"></div>
+                </div>
+
+                <!-- Devices List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📱 Your Devices</h3>
+                        <button id="refresh-devices" class="btn btn-secondary">Refresh</button>
+                    </div>
+                    <div id="devices-list" class="devices-container">
+                        <!-- Devices will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- API Key Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🔑 API Key</h3>
+                        <button id="refresh-api-key" class="btn btn-warning">Generate New Key</button>
+                    </div>
+                    <div class="api-key-container">
+                        <input type="text" id="api-key-display" readonly>
+                        <button id="copy-api-key" class="btn btn-secondary">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Device Modal -->
+    <div id="device-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-device-name">Device Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="device-details">
+                    <!-- Device details will be loaded here -->
+                </div>
+                <div class="device-actions">
+                    <button id="lock-device" class="btn btn-warning">🔒 Lock Device</button>
+                    <button id="unlock-device" class="btn btn-success">🔓 Unlock Device</button>
+                    <button id="locate-device" class="btn btn-info">📍 Locate</button>
+                    <button id="start-alarm" class="btn btn-danger">🚨 Start Alarm</button>
+                    <button id="stop-alarm" class="btn btn-secondary">🔇 Stop Alarm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

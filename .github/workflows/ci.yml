@@ -1,0 +1,197 @@
+name: 🛡️ Alpha Security Server CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ===============================================
+  # Code Quality & Testing
+  # ===============================================
+  test:
+    name: 🧪 Test & Quality Check
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: 🔧 Install dependencies
+      run: npm ci
+      
+    - name: 🧹 Run linter
+      run: |
+        # Install ESLint if package.json has it configured
+        if grep -q "eslint" package.json; then
+          npm run lint
+        else
+          echo "⚠️ No linting configured - consider adding ESLint"
+        fi
+      
+    - name: 🧪 Run tests
+      run: |
+        # Run tests if configured
+        if grep -q "\"test\":" package.json; then
+          npm test
+        else
+          echo "⚠️ No tests configured - consider adding Jest or Mocha"
+        fi
+      env:
+        NODE_ENV: test
+        
+    - name: 📊 Generate coverage report
+      run: |
+        # Run coverage if configured
+        if grep -q "jest" package.json || grep -q "nyc" package.json; then
+          npm run coverage || echo "Coverage not configured"
+        fi
+
+  # ===============================================
+  # Security Audit
+  # ===============================================
+  security:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: 🔧 Install dependencies
+      run: npm ci
+      
+    - name: 🛡️ Run security audit
+      run: npm audit --audit-level high
+      
+    - name: 🔍 Run security scan with Snyk
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+      continue-on-error: true
+
+  # ===============================================
+  # Docker Build & Test
+  # ===============================================
+  docker:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-latest
+    needs: [test]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🏗️ Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: 🐳 Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: alpha-security-server:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: 🧪 Test Docker container
+      run: |
+        # Run the container and test health endpoint
+        docker run -d --name alpha-test -p 3000:3000 -e NODE_ENV=test alpha-security-server:test
+        sleep 10
+        curl -f http://localhost:3000/health || exit 1
+        docker stop alpha-test
+        docker rm alpha-test
+
+  # ===============================================
+  # Deploy to Railway (Production)
+  # ===============================================
+  deploy-railway:
+    name: 🚀 Deploy to Railway
+    runs-on: ubuntu-latest
+    needs: [test, security, docker]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🚂 Deploy to Railway
+      uses: railwayapp/railway-action@v1
+      with:
+        railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        railway_command: 'up'
+      env:
+        NODE_ENV: production
+
+  # ===============================================
+  # Deploy to Render (Staging)
+  # ===============================================
+  deploy-render:
+    name: 🎯 Deploy to Render (Staging)
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🌐 Deploy to Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+
+  # ===============================================
+  # Notification
+  # ===============================================
+  notify:
+    name: 📢 Notify Team
+    runs-on: ubuntu-latest
+    needs: [test, security, docker]
+    if: always()
+    
+    steps:
+    - name: 📢 Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#alpha-security'
+        text: |
+          🛡️ Alpha Security Server CI/CD
+          📊 Status: ${{ job.status }}
+          🌿 Branch: ${{ github.ref }}
+          👤 Author: ${{ github.actor }}
+          📝 Commit: ${{ github.event.head_commit.message }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
+
+# ===============================================
+# Workflow Status Badge
+# ===============================================
+# Add this to your README.md:
+# ![CI](https://github.com/yourusername/alpha-security-server/workflows/Alpha%20Security%20Server%20CI/CD/badge.svg)
