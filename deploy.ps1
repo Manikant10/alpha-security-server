@@ -86,4 +86,4 @@ Write-Host "✅ Your Alpha Security Server is now online!" -ForegroundColor Gree
 # Keep window open
 Write-Host ""
 Write-Host "Press any key to continue..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")"
