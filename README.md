@@ -72,7 +72,7 @@ graph TB
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/alpha-security-server.git
+   git clone https://github.com/Manikant10/alpha-security-server.git
    cd alpha-security-server
    ```
 
@@ -277,8 +277,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Troubleshooting](TROUBLESHOOTING.md)
 
 ### Community
-- 🐛 [Report Issues](https://github.com/yourusername/alpha-security-server/issues)
-- 💬 [Discussions](https://github.com/yourusername/alpha-security-server/discussions)
+- 🐛 [Report Issues](https://github.com/Manikant10/alpha-security-server/issues)
+- 💬 [Discussions](https://github.com/Manikant10/alpha-security-server/discussions)
 - 📧 [Email Support](mailto:support@alphasecurity.dev)
 
 ### Quick Help

@@ -112,7 +112,7 @@ We use labels to help organize and identify issues:
 
 If you need help, you can:
 
-- Check existing [issues](https://github.com/yourusername/alpha-security-server/issues)
+- Check existing [issues](https://github.com/Manikant10/alpha-security-server/issues)
 - Create a new issue with the `question` label
 - Join our discussions
 
