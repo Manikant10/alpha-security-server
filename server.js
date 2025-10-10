@@ -10,11 +10,11 @@ const path = require('path');
 require('dotenv').config();
 
 const Database = require('./database');
-const authRoutes = require('./routes/auth');
-const deviceRoutes = require('./routes/devices');
-const locationRoutes = require('./routes/location');
-const commandRoutes = require('./routes/commands');
-const dashboardRoutes = require('./routes/dashboard');
+const createAuthRoutes = require('./routes/auth');
+const createDeviceRoutes = require('./routes/devices');
+const createLocationRoutes = require('./routes/location');
+const createCommandRoutes = require('./routes/commands');
+const createDashboardRoutes = require('./routes/dashboard');
 
 class AlphaSecurityServer {
     constructor() {
@@ -83,6 +83,13 @@ class AlphaSecurityServer {
     }
 
     setupRoutes() {
+        // Create route instances with database
+        const authRoutes = createAuthRoutes(this.db);
+        const dashboardRoutes = createDashboardRoutes(this.db);
+        const deviceRoutes = createDeviceRoutes(this.db, authRoutes.authenticateApiKey);
+        const locationRoutes = createLocationRoutes(this.db, authRoutes.authenticateApiKey);
+        const commandRoutes = createCommandRoutes(this.db, authRoutes.authenticateApiKey);
+
         // Dashboard HTML route
         this.app.get('/dashboard', (req, res) => {
             res.sendFile(path.join(__dirname, 'public', 'index.html'));

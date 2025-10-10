@@ -1,9 +1,7 @@
 const express = require('express');
-const Database = require('../database');
-const { authenticateApiKey } = require('./auth');
 
-const router = express.Router();
-const db = new Database();
+function createLocationRoutes(db, authenticateApiKey) {
+    const router = express.Router();
 
 // Apply authentication to all location routes
 router.use(authenticateApiKey);
@@ -453,4 +451,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c;
 }
 
-module.exports = router;
+    return router;
+}
+
+module.exports = createLocationRoutes;

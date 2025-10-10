@@ -1,9 +1,7 @@
 const express = require('express');
-const Database = require('../database');
-const { authenticateApiKey } = require('./auth');
 
-const router = express.Router();
-const db = new Database();
+function createDeviceRoutes(db, authenticateApiKey) {
+    const router = express.Router();
 
 // Apply authentication to all device routes
 router.use(authenticateApiKey);
@@ -275,4 +273,7 @@ function isDeviceOnline(lastSeen) {
     return diffMinutes <= 5;
 }
 
-module.exports = router;
+    return router;
+}
+
+module.exports = createDeviceRoutes;

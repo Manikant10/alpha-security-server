@@ -2,10 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const Database = require('../database');
 
-const router = express.Router();
-const db = new Database();
+function createAuthRoutes(db) {
+    const router = express.Router();
 
 // Middleware for API key authentication
 const authenticateApiKey = async (req, res, next) => {
@@ -152,7 +151,10 @@ router.post('/refresh-api-key', authenticateApiKey, async (req, res) => {
     }
 });
 
-// Middleware export for other routes
-router.authenticateApiKey = authenticateApiKey;
+    // Middleware export for other routes
+    router.authenticateApiKey = authenticateApiKey;
 
-module.exports = router;
+    return router;
+}
+
+module.exports = createAuthRoutes;

@@ -1,10 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const Database = require('../database');
 
-const router = express.Router();
-const db = new Database();
+function createDashboardRoutes(db) {
+    const router = express.Router();
 
 // JWT Secret (in production, use environment variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-dashboard-secret-key-change-in-production';
@@ -392,4 +391,7 @@ router.post('/user/refresh-api-key', authenticateToken, async (req, res) => {
     }
 });
 
-module.exports = router;
+    return router;
+}
+
+module.exports = createDashboardRoutes;

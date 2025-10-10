@@ -1,9 +1,7 @@
 const express = require('express');
-const Database = require('../database');
-const { authenticateApiKey } = require('./auth');
 
-const router = express.Router();
-const db = new Database();
+function createCommandRoutes(db, authenticateApiKey) {
+    const router = express.Router();
 
 // Apply authentication to all command routes
 router.use(authenticateApiKey);
@@ -489,4 +487,7 @@ router.post('/batch', async (req, res) => {
     }
 });
 
-module.exports = router;
+    return router;
+}
+
+module.exports = createCommandRoutes;
