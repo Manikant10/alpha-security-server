@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alpha Security Suite - Dashboard</title>
+    <title>🛡️ Alpha Security Suite - Professional Device Management</title>
+    <meta name="description" content="Advanced Android device security and remote management platform">
+    <meta name="theme-color" content="#0D1117">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
@@ -15,7 +26,8 @@
         <div class="container">
             <div class="login-card">
                 <h1>🛡️ Alpha Security Suite</h1>
-                <p>Remote Device Security & Tracking</p>
+                <p>Advanced Android Device Management Platform</p>
+                <div class="subtitle">Secure • Track • Control • Monitor</div>
                 
                 <div class="tabs">
                     <button class="tab-btn active" onclick="showTab('login')">Login</button>
@@ -60,8 +72,13 @@
                 <div class="header-content">
                     <h1>🛡️ Alpha Security Dashboard</h1>
                     <div class="user-info">
-                        <span id="username-display"></span>
-                        <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                        <div class="user-details">
+                            <span id="username-display"></span>
+                            <span class="user-role">Administrator</span>
+                        </div>
+                        <button id="logout-btn" class="btn btn-secondary">
+                            <span>🚪 Logout</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -137,11 +154,26 @@
                     <!-- Device details will be loaded here -->
                 </div>
                 <div class="device-actions">
-                    <button id="lock-device" class="btn btn-warning">🔒 Lock Device</button>
-                    <button id="unlock-device" class="btn btn-success">🔓 Unlock Device</button>
-                    <button id="locate-device" class="btn btn-info">📍 Locate</button>
-                    <button id="start-alarm" class="btn btn-danger">🚨 Start Alarm</button>
-                    <button id="stop-alarm" class="btn btn-secondary">🔇 Stop Alarm</button>
+                    <button id="lock-device" class="btn btn-warning">
+                        <span class="btn-icon">🔒</span>
+                        <span>Lock Device</span>
+                    </button>
+                    <button id="unlock-device" class="btn btn-success">
+                        <span class="btn-icon">🔓</span>
+                        <span>Unlock Device</span>
+                    </button>
+                    <button id="locate-device" class="btn btn-info">
+                        <span class="btn-icon">📍</span>
+                        <span>Locate Device</span>
+                    </button>
+                    <button id="start-alarm" class="btn btn-danger">
+                        <span class="btn-icon">🚨</span>
+                        <span>Start Alarm</span>
+                    </button>
+                    <button id="stop-alarm" class="btn btn-secondary">
+                        <span class="btn-icon">🔇</span>
+                        <span>Stop Alarm</span>
+                    </button>
                 </div>
             </div>
         </div>

@@ -56,6 +56,12 @@ async function handleLogin(e) {
     
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // Add loading state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="loading"></span> Authenticating...';
+    submitBtn.disabled = true;
     
     try {
         const response = await fetch('/dashboard/auth/login', {
@@ -72,13 +78,30 @@ async function handleLogin(e) {
             authToken = data.token;
             currentUser = data.user;
             localStorage.setItem('auth_token', authToken);
-            showDashboard();
-            showToast('Login successful!', 'success');
+            
+            // Success animation
+            submitBtn.innerHTML = '✅ Welcome!';
+            submitBtn.style.background = 'linear-gradient(135deg, var(--success), #32CD32)';
+            
+            setTimeout(() => {
+                showDashboard();
+                showToast(`Welcome back, ${data.user.username}! 🎉`, 'success');
+            }, 800);
         } else {
-            showAuthError(data.error);
+            throw new Error(data.error);
         }
     } catch (error) {
-        showAuthError('Login failed. Please try again.');
+        // Error animation
+        submitBtn.innerHTML = '❌ Login Failed';
+        submitBtn.style.background = 'linear-gradient(135deg, var(--danger), #FF6B6B)';
+        showAuthError(error.message || 'Login failed. Please try again.');
+        
+        // Reset button after delay
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+        }, 2000);
     }
 }
 
@@ -88,6 +111,12 @@ async function handleRegister(e) {
     const username = document.getElementById('register-username').value;
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // Add loading state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<span class="loading"></span> Creating Account...';
+    submitBtn.disabled = true;
     
     try {
         const response = await fetch('/dashboard/auth/register', {
@@ -104,13 +133,30 @@ async function handleRegister(e) {
             authToken = data.token;
             currentUser = data.user;
             localStorage.setItem('auth_token', authToken);
-            showDashboard();
-            showToast('Registration successful!', 'success');
+            
+            // Success animation
+            submitBtn.innerHTML = '🎉 Account Created!';
+            submitBtn.style.background = 'linear-gradient(135deg, var(--success), #32CD32)';
+            
+            setTimeout(() => {
+                showDashboard();
+                showToast(`Welcome to Alpha Security, ${data.user.username}! 🚀`, 'success');
+            }, 800);
         } else {
-            showAuthError(data.error);
+            throw new Error(data.error);
         }
     } catch (error) {
-        showAuthError('Registration failed. Please try again.');
+        // Error animation
+        submitBtn.innerHTML = '❌ Registration Failed';
+        submitBtn.style.background = 'linear-gradient(135deg, var(--danger), #FF6B6B)';
+        showAuthError(error.message || 'Registration failed. Please try again.');
+        
+        // Reset button after delay
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+        }, 2000);
     }
 }
 
@@ -587,13 +633,43 @@ function copyApiKey() {
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.textContent = message;
     
-    document.getElementById('toast-container').appendChild(toast);
+    // Add icon based on type
+    const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: '📍'
+    };
     
-    setTimeout(() => {
-        toast.remove();
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.2em;">${icons[type] || icons.info}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    const container = document.getElementById('toast-container');
+    container.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    const timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%) scale(0.8)';
+        setTimeout(() => toast.remove(), 300);
     }, 5000);
+    
+    // Allow manual dismissal on click
+    toast.addEventListener('click', () => {
+        clearTimeout(timer);
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%) scale(0.8)';
+        setTimeout(() => toast.remove(), 300);
+    });
+    
+    // Add cursor pointer for manual dismissal
+    toast.style.cursor = 'pointer';
+    toast.title = 'Click to dismiss';
 }
 
 function formatDateTime(dateString) {
