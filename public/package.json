@@ -1,1 +1,15 @@
+{
+  "name": "alpha-security-frontend",
+  "version": "1.0.0",
+  "description": "Frontend dashboard for Alpha Security Suite",
+  "scripts": {
+    "start": "serve .",
+    "build": "echo 'Static site – no build step required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.3"
+  },
+  "author": "Alpha Security Team",
+  "license": "MIT"
+}
 
