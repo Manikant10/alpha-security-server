@@ -20,7 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.1",
     "sqlite3": "^5.1.6",
-    "node-cron": "^3.0.3",
+    "node-cron": "^4.2.1",
     "express-rate-limit": "^7.1.5",
     "socket.io": "^4.7.4",
     "nodemailer": "^6.9.7",
