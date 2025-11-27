@@ -48,6 +48,7 @@ function setupEventListeners() {
     document.getElementById('locate-device').addEventListener('click', () => sendCommand('locate'));
     document.getElementById('start-alarm').addEventListener('click', () => sendCommand('start-alarm'));
     document.getElementById('stop-alarm').addEventListener('click', () => sendCommand('stop-alarm'));
+    document.getElementById('wipe-device').addEventListener('click', () => sendCommand('wipe'));
 }
 
 // Authentication Functions
@@ -539,6 +540,13 @@ async function sendCommand(commandType) {
             break;
         case 'stop-alarm':
             endpoint = `/api/commands/${currentDevice}/alarm/stop`;
+            break;
+        case 'wipe':
+            if (!confirm('This will ERASE ALL DATA on the device. Type OK to continue.')) {
+                return;
+            }
+            endpoint = `/api/commands/${currentDevice}/wipe`;
+            payload = { confirmWipe: 'CONFIRM_FACTORY_RESET' };
             break;
         default:
             return;

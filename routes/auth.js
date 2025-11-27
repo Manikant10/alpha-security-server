@@ -151,6 +151,76 @@ router.post('/refresh-api-key', authenticateApiKey, async (req, res) => {
     }
 });
 
+// PUT /api/auth/profile - Update user profile (email and/or password)
+router.put('/profile', authenticateApiKey, async (req, res) => {
+    try {
+        const { email, currentPassword, newPassword } = req.body;
+        const userId = req.user.id;
+
+        // Validate at least one field is being updated
+        if (!email && !newPassword) {
+            return res.status(400).json({ 
+                error: 'At least one field (email or password) must be provided' 
+            });
+        }
+
+        // If changing password, verify current password first
+        if (newPassword) {
+            if (!currentPassword) {
+                return res.status(400).json({ 
+                    error: 'Current password required to change password' 
+                });
+            }
+
+            // Verify current password
+            const user = await db.getUserById(userId);
+            const isValidPassword = await bcrypt.compare(currentPassword, user.password_hash);
+            if (!isValidPassword) {
+                return res.status(401).json({ error: 'Current password is incorrect' });
+            }
+
+            // Validate new password
+            if (newPassword.length < 6) {
+                return res.status(400).json({ 
+                    error: 'New password must be at least 6 characters long' 
+                });
+            }
+
+            // Hash new password
+            const saltRounds = 12;
+            const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+            
+            // Update password
+            await db.run('UPDATE users SET password_hash = ? WHERE id = ?', 
+                [newPasswordHash, userId]);
+        }
+
+        // Update email if provided
+        if (email) {
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json({ error: 'Invalid email format' });
+            }
+
+            await db.run('UPDATE users SET email = ? WHERE id = ?', [email, userId]);
+        }
+
+        // Get updated user profile
+        const updatedUser = await db.getUserById(userId);
+        const { password_hash, ...userProfile } = updatedUser;
+
+        res.json({
+            message: 'Profile updated successfully',
+            user: userProfile
+        });
+
+    } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
     // Middleware export for other routes
     router.authenticateApiKey = authenticateApiKey;
 
